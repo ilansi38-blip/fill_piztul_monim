@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+*.json.tmp
+
+# Generated documents (contain submitted personal data)
+output/
+
+# Word lock files
+~$*
+
+.claude/settings.local.json

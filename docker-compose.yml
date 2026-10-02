@@ -1,0 +1,15 @@
+services:
+  form-filler:
+    build: .
+    image: form-filler
+    ports:
+      - "8765:8765"
+    volumes:
+      # Generated documents land in ./output on the host.
+      - ./output:/app/output
+      # Keep templates, configs and the forms registry editable/persistent
+      # (the web UI can add templates and forms).
+      - ./templates:/app/templates
+      - ./configs:/app/configs
+      - ./forms.json:/app/forms.json
+    restart: unless-stopped

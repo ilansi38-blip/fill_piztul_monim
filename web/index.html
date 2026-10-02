@@ -1,0 +1,1107 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מילוי טפסים</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f6fb;
+    --surface: #ffffff;
+    --surface-2: #f8fafc;
+    --text: #0f172a;
+    --muted: #64748b;
+    --border: #e5e9f2;
+    --primary: #4f46e5;
+    --primary-600: #4338ca;
+    --primary-soft: #eef2ff;
+    --success: #059669;
+    --success-soft: #ecfdf5;
+    --danger: #dc2626;
+    --danger-soft: #fef2f2;
+    --amber-soft: #fff7ed;
+    --amber: #c2410c;
+    --shadow-sm: 0 1px 2px rgba(15, 23, 42, .06);
+    --shadow: 0 4px 16px rgba(15, 23, 42, .07);
+    --shadow-lg: 0 18px 50px rgba(15, 23, 42, .18);
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Heebo", "Segoe UI", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  button { font: inherit; cursor: pointer; }
+  input { font: inherit; }
+  svg { flex-shrink: 0; }
+
+  /* ---------- header ---------- */
+  .hero {
+    background: linear-gradient(120deg, #4338ca 0%, #6366f1 55%, #8b5cf6 100%);
+    color: #fff;
+    padding: 26px 32px 70px;
+  }
+  .hero-inner { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .logo {
+    width: 48px; height: 48px; border-radius: 14px;
+    background: rgba(255, 255, 255, .18); display: grid; place-items: center;
+    backdrop-filter: blur(4px);
+  }
+  .hero h1 { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -.3px; }
+  .hero p { margin: 2px 0 0; opacity: .85; font-size: 15px; }
+  .hero .spacer { flex: 1; }
+  .steps { display: flex; gap: 10px; flex-wrap: wrap; }
+  .step {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255, 255, 255, .14); border: 1px solid rgba(255, 255, 255, .2);
+    padding: 6px 14px 6px 10px; border-radius: 999px; font-size: 14px; font-weight: 500;
+  }
+  .step b {
+    width: 22px; height: 22px; border-radius: 50%; background: #fff; color: var(--primary);
+    display: grid; place-items: center; font-size: 12px;
+  }
+
+  /* ---------- layout ---------- */
+  .layout {
+    max-width: 1400px; margin: -46px auto 0; padding: 0 24px 120px;
+    display: grid; grid-template-columns: 260px minmax(0, 1fr) 300px; gap: 20px; align-items: start;
+  }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow);
+  }
+  .card-title {
+    font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase;
+    padding: 16px 18px 8px; letter-spacing: .3px;
+  }
+  .side { position: sticky; top: 16px; }
+
+  /* ---------- forms list ---------- */
+  .forms { padding: 4px 10px 12px; display: flex; flex-direction: column; gap: 4px; }
+  .form-btn {
+    display: flex; align-items: center; gap: 12px; width: 100%;
+    background: none; border: 1px solid transparent; border-radius: 10px;
+    padding: 10px 12px; text-align: right; color: var(--text); transition: background .15s, border-color .15s;
+  }
+  .form-btn:hover { background: var(--surface-2); }
+  .form-btn .ic {
+    width: 34px; height: 34px; border-radius: 9px; background: var(--surface-2);
+    display: grid; place-items: center; color: var(--muted); transition: inherit;
+  }
+  .form-btn .nm { font-weight: 600; flex: 1; }
+  .form-btn .sub { display: block; font-size: 12px; color: var(--muted); font-weight: 400; }
+  .form-btn.active { background: var(--primary-soft); border-color: #c7d2fe; }
+  .form-btn.active .ic { background: var(--primary); color: #fff; }
+  .form-btn.active .nm { color: var(--primary-600); }
+
+  /* ---------- main panel ---------- */
+  .main-head { display: flex; align-items: center; gap: 12px; padding: 20px 22px 6px; flex-wrap: wrap; }
+  .main-head h2 { margin: 0; font-size: 22px; font-weight: 800; }
+  .pill {
+    font-size: 13px; font-weight: 600; padding: 2px 10px; border-radius: 999px;
+    background: var(--surface-2); color: var(--muted); border: 1px solid var(--border);
+  }
+  .main-head .spacer { flex: 1; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    border-radius: 10px; padding: 9px 16px; font-weight: 600; font-size: 14px;
+    border: 1px solid var(--border); background: var(--surface); color: var(--text);
+    transition: background .15s, box-shadow .15s, transform .05s, border-color .15s;
+  }
+  .btn:hover { background: var(--surface-2); }
+  .btn:active { transform: translateY(1px); }
+  .btn:disabled { opacity: .55; cursor: not-allowed; }
+  .btn-primary { background: var(--primary); border-color: var(--primary); color: #fff; box-shadow: 0 4px 14px rgba(79, 70, 229, .35); }
+  .btn-primary:hover { background: var(--primary-600); }
+  .btn-ghost { border-color: transparent; background: transparent; color: var(--muted); }
+  .btn-ghost:hover { background: var(--surface-2); color: var(--text); }
+  .btn-light { background: rgba(255, 255, 255, .16); border-color: rgba(255, 255, 255, .28); color: #fff; }
+  .btn-light:hover { background: rgba(255, 255, 255, .26); }
+  .btn-sm { padding: 6px 12px; font-size: 13px; border-radius: 8px; }
+
+  .toolbar { display: flex; gap: 12px; align-items: center; padding: 12px 22px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .search { position: relative; flex: 1; min-width: 200px; }
+  .search input {
+    width: 100%; padding: 10px 40px 10px 14px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--surface-2); outline: none; transition: border-color .15s, box-shadow .15s, background .15s;
+  }
+  .search input:focus { border-color: #a5b4fc; background: #fff; box-shadow: 0 0 0 4px rgba(99, 102, 241, .12); }
+  .search svg { position: absolute; right: 13px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+
+  /* custom checkbox */
+  .chk { position: relative; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; font-size: 14px; font-weight: 500; color: var(--muted); }
+  .chk input { position: absolute; opacity: 0; pointer-events: none; }
+  .chk .box {
+    width: 20px; height: 20px; border-radius: 6px; border: 2px solid #cbd5e1; background: #fff;
+    display: grid; place-items: center; transition: all .15s;
+  }
+  .chk .box svg { opacity: 0; transform: scale(.6); transition: all .15s; }
+  .chk input:checked + .box { background: var(--primary); border-color: var(--primary); }
+  .chk input:checked + .box svg { opacity: 1; transform: none; }
+  .chk input:indeterminate + .box { background: var(--primary); border-color: var(--primary); }
+  .chk input:indeterminate + .box::after { content: ""; width: 10px; height: 2px; background: #fff; border-radius: 2px; position: absolute; }
+  .chk input:focus-visible + .box { box-shadow: 0 0 0 4px rgba(99, 102, 241, .2); }
+
+  /* ---------- submissions ---------- */
+  .rows { padding: 10px 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+  .row {
+    border: 1px solid var(--border); border-radius: 12px; background: #fff;
+    transition: border-color .15s, box-shadow .15s, background .15s;
+  }
+  .row:hover { border-color: #c7d2fe; box-shadow: var(--shadow-sm); }
+  .row.selected { border-color: #a5b4fc; background: #fafaff; box-shadow: 0 0 0 3px rgba(99, 102, 241, .1); }
+  .row-main { display: flex; align-items: center; gap: 14px; padding: 12px 14px; cursor: pointer; }
+  .date {
+    width: 74px; text-align: center; border-radius: 10px; background: var(--surface-2);
+    padding: 6px 4px; border: 1px solid var(--border); flex-shrink: 0;
+  }
+  .date .d { font-weight: 800; font-size: 15px; line-height: 1.2; }
+  .date .t { font-size: 12px; color: var(--muted); }
+  .row.selected .date { background: var(--primary-soft); border-color: #c7d2fe; }
+  .row-body { flex: 1; min-width: 0; }
+  .row-title { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row-meta { display: flex; gap: 6px; margin-top: 4px; flex-wrap: wrap; }
+  .tag {
+    font-size: 12.5px; color: #475569; background: var(--surface-2); border: 1px solid var(--border);
+    padding: 1px 8px; border-radius: 6px; max-width: 260px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .tag b { font-weight: 500; color: var(--muted); }
+  .tag.also { background: var(--amber-soft); border-color: #fed7aa; color: var(--amber); font-weight: 600; }
+  .expand { width: 34px; height: 34px; border-radius: 8px; display: grid; place-items: center; border: none; background: none; color: var(--muted); }
+  .expand:hover { background: var(--surface-2); color: var(--text); }
+  .expand svg { transition: transform .2s; }
+  .row.open .expand svg { transform: rotate(180deg); }
+  .details { display: none; border-top: 1px dashed var(--border); padding: 14px 16px 16px; }
+  .row.open .details { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px 18px; }
+  .field .k { font-size: 12px; color: var(--muted); }
+  .field .v { font-weight: 500; word-break: break-word; }
+
+  .empty { text-align: center; padding: 60px 20px; color: var(--muted); }
+  .empty .big { width: 64px; height: 64px; border-radius: 18px; margin: 0 auto 14px; background: var(--surface-2); display: grid; place-items: center; }
+  .empty h3 { margin: 0 0 4px; color: var(--text); font-size: 17px; }
+  .empty.error .big { background: var(--danger-soft); color: var(--danger); }
+
+  .skeleton { height: 66px; border-radius: 12px; background: linear-gradient(90deg, #eef1f6 0%, #f8fafc 50%, #eef1f6 100%); background-size: 200% 100%; animation: shimmer 1.2s infinite; }
+  @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+  /* ---------- recent docs ---------- */
+  .docs { padding: 2px 10px 12px; max-height: calc(100vh - 140px); overflow-y: auto; }
+  .doc { display: flex; align-items: center; gap: 10px; padding: 9px 8px; border-radius: 10px; }
+  .doc:hover { background: var(--surface-2); }
+  .doc .ic { width: 32px; height: 32px; border-radius: 8px; background: #e0ecff; color: #2563eb; display: grid; place-items: center; }
+  .doc .info { flex: 1; min-width: 0; }
+  .doc .fn { font-weight: 600; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .doc .when { font-size: 12px; color: var(--muted); }
+  .doc.fresh .ic { background: var(--success-soft); color: var(--success); }
+  .doc-empty { color: var(--muted); font-size: 14px; padding: 12px 10px 18px; }
+  .docs-head { display: flex; align-items: center; justify-content: space-between; padding-left: 10px; }
+
+  /* ---------- floating action bar ---------- */
+  .actionbar {
+    position: fixed; bottom: 24px; left: 50%; transform: translate(-50%, 140%);
+    background: #0f172a; color: #fff; border-radius: 16px; padding: 10px 10px 10px 10px;
+    display: flex; align-items: center; gap: 14px; box-shadow: var(--shadow-lg);
+    transition: transform .28s cubic-bezier(.2, .9, .3, 1.2); z-index: 20;
+  }
+  .actionbar.show { transform: translate(-50%, 0); }
+  .actionbar .count { padding: 0 12px; font-weight: 600; white-space: nowrap; }
+  .actionbar .count b { background: var(--primary); padding: 1px 9px; border-radius: 999px; margin-left: 6px; }
+  .actionbar .btn-ghost { color: #cbd5e1; }
+  .actionbar .btn-ghost:hover { background: rgba(255, 255, 255, .08); color: #fff; }
+  .actionbar .btn-primary { padding: 11px 22px; font-size: 15px; }
+
+  .spin { width: 16px; height: 16px; border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: rot .7s linear infinite; }
+  @keyframes rot { to { transform: rotate(360deg); } }
+  .spinning svg { animation: rot .8s linear infinite; }
+
+  /* ---------- modal ---------- */
+  .overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, .45); backdrop-filter: blur(3px); display: none; place-items: center; z-index: 40; padding: 16px; }
+  .overlay.show { display: grid; animation: fade .2s; }
+  @keyframes fade { from { opacity: 0; } }
+  .modal { background: #fff; border-radius: 18px; width: min(520px, 100%); box-shadow: var(--shadow-lg); overflow: hidden; animation: pop .25s cubic-bezier(.2, .9, .3, 1.2); }
+  @keyframes pop { from { transform: scale(.94); opacity: 0; } }
+  .modal-top { text-align: center; padding: 28px 24px 10px; }
+  .modal-top .ok { width: 60px; height: 60px; border-radius: 50%; background: var(--success-soft); color: var(--success); display: grid; place-items: center; margin: 0 auto 12px; }
+  .modal-top h3 { margin: 0; font-size: 21px; }
+  .modal-top p { margin: 4px 0 0; color: var(--muted); }
+  .modal-list { padding: 10px 18px; max-height: 300px; overflow-y: auto; }
+  .modal-foot { display: flex; gap: 10px; padding: 14px 18px 18px; justify-content: center; }
+
+  /* ---------- toasts ---------- */
+  .toasts { position: fixed; top: 18px; left: 18px; display: flex; flex-direction: column; gap: 10px; z-index: 60; }
+  .toast {
+    background: #fff; border-radius: 12px; box-shadow: var(--shadow-lg); padding: 12px 16px;
+    display: flex; gap: 10px; align-items: flex-start; max-width: 380px; border-right: 4px solid var(--primary);
+    animation: slide .25s ease-out;
+  }
+  .toast.error { border-right-color: var(--danger); }
+  .toast.success { border-right-color: var(--success); }
+  .toast .t-title { font-weight: 700; }
+  .toast .t-msg { font-size: 13.5px; color: var(--muted); word-break: break-word; }
+  @keyframes slide { from { transform: translateX(-30px); opacity: 0; } }
+
+  /* ---------- form links & add button ---------- */
+  .links { display: flex; gap: 8px; flex-wrap: wrap; }
+  .add-form { margin: 0 10px 14px; width: calc(100% - 20px); border-style: dashed; color: var(--primary); border-color: #c7d2fe; background: var(--primary-soft); }
+  .add-form:hover { background: #e0e7ff; }
+  .icon-btn { width: 38px; padding: 9px 0; }
+
+  /* ---------- form editor ---------- */
+  .modal.wide { width: min(760px, 100%); max-height: calc(100vh - 32px); display: flex; flex-direction: column; }
+  .ed-head { padding: 22px 26px 0; }
+  .ed-head h3 { margin: 0 0 14px; font-size: 21px; }
+  .ed-steps { display: flex; gap: 6px; border-bottom: 1px solid var(--border); }
+  .ed-step {
+    flex: 1; display: flex; align-items: center; gap: 8px; padding: 10px 6px 12px; font-weight: 600; font-size: 14px;
+    color: var(--muted); border: none; background: none; border-bottom: 3px solid transparent; margin-bottom: -1px;
+  }
+  .ed-step b { width: 24px; height: 24px; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--border); display: grid; place-items: center; font-size: 12px; }
+  .ed-step.active { color: var(--primary-600); border-bottom-color: var(--primary); }
+  .ed-step.active b { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .ed-step.done b { background: var(--success); color: #fff; border-color: var(--success); }
+  .ed-body { padding: 20px 26px; overflow-y: auto; flex: 1; }
+  .ed-page { display: none; }
+  .ed-page.active { display: block; }
+  .ed-foot { display: flex; gap: 10px; padding: 14px 26px 18px; border-top: 1px solid var(--border); align-items: center; }
+  .ed-foot .spacer { flex: 1; }
+  .btn-danger { color: var(--danger); border-color: #fecaca; }
+  .btn-danger:hover { background: var(--danger-soft); }
+  .btn-danger.confirm { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+  .fg { margin-bottom: 18px; }
+  .fg > label { display: block; font-weight: 600; margin-bottom: 6px; }
+  .fg .hint { font-size: 13px; color: var(--muted); margin-top: 5px; }
+  .fg .opt { font-weight: 400; color: var(--muted); font-size: 13px; }
+  .inp, select.inp {
+    width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: #fff;
+    outline: none; transition: border-color .15s, box-shadow .15s; color: var(--text);
+  }
+  .inp:focus { border-color: #a5b4fc; box-shadow: 0 0 0 4px rgba(99, 102, 241, .12); }
+  .inp.ltr { direction: ltr; text-align: left; }
+  .inline { display: flex; gap: 8px; }
+  .inline .inp { flex: 1; }
+
+  .drop {
+    border: 2px dashed #c7d2fe; border-radius: 14px; background: var(--primary-soft); padding: 26px 16px;
+    text-align: center; cursor: pointer; transition: background .15s, border-color .15s;
+  }
+  .drop:hover, .drop.over { background: #e0e7ff; border-color: var(--primary); }
+  .drop .big { width: 52px; height: 52px; border-radius: 14px; background: #fff; color: var(--primary); display: grid; place-items: center; margin: 0 auto 10px; box-shadow: var(--shadow-sm); }
+  .drop strong { display: block; font-size: 15px; }
+  .drop span { color: var(--muted); font-size: 13px; }
+  .drop.has-file { background: var(--success-soft); border-color: #6ee7b7; border-style: solid; }
+  .drop.has-file .big { color: var(--success); }
+
+  .note { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; font-size: 13.5px; color: #475569; }
+  .note code { background: #fff; border: 1px solid var(--border); border-radius: 5px; padding: 0 5px; font-family: Consolas, monospace; direction: ltr; unicode-bidi: embed; }
+  .note.warn { background: var(--amber-soft); border-color: #fed7aa; color: var(--amber); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .status { display: flex; align-items: center; gap: 8px; font-size: 13.5px; margin-top: 8px; font-weight: 500; }
+  .status.ok { color: var(--success); }
+  .status.err { color: var(--danger); }
+
+  .switch-row { display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 600; }
+  .filter-box { margin-top: 12px; display: none; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .filter-box.show { display: grid; }
+
+  .map-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  .progress { flex: 1; min-width: 140px; height: 8px; background: var(--surface-2); border-radius: 99px; overflow: hidden; border: 1px solid var(--border); }
+  .progress div { height: 100%; background: linear-gradient(90deg, #6366f1, #8b5cf6); transition: width .3s; }
+  .map { display: flex; flex-direction: column; gap: 6px; }
+  .map-row { display: grid; grid-template-columns: minmax(0, 1fr) 22px minmax(0, 1.3fr); gap: 10px; align-items: center; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--border); }
+  .map-row.linked { background: #fafaff; border-color: #c7d2fe; }
+  .map-row .ph { font-weight: 600; font-family: Consolas, "Heebo", monospace; font-size: 13.5px; word-break: break-word; }
+  .map-row .arrow { color: var(--muted); }
+  .map-row .ex { grid-column: 3; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: -4px; }
+  .map-row select { padding: 7px 10px; }
+
+  @media (max-width: 1150px) {
+    .layout { grid-template-columns: 240px minmax(0, 1fr); }
+    .recent { grid-column: 1 / -1; }
+    .recent.side { position: static; }
+  }
+  @media (max-width: 760px) {
+    .hero { padding: 20px 16px 64px; }
+    .layout { grid-template-columns: 1fr; padding: 0 12px 120px; }
+    .side { position: static; }
+    .forms { flex-direction: row; overflow-x: auto; }
+    .form-btn { width: auto; white-space: nowrap; }
+    .steps { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="logo">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="m9 15 2 2 4-4"/></svg>
+    </div>
+    <div>
+      <h1>מילוי טפסים</h1>
+      <p>הפקת מסמכים אוטומטית מהגשות Google Forms</p>
+    </div>
+    <div class="spacer"></div>
+    <div class="steps">
+      <div class="step"><b>1</b>בוחרים טופס</div>
+      <div class="step"><b>2</b>מסמנים הגשות</div>
+      <div class="step"><b>3</b>יוצרים מסמכים</div>
+    </div>
+    <button class="btn btn-light" onclick="openOutput()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      תיקיית המסמכים
+    </button>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="card side">
+    <div class="card-title">טפסים</div>
+    <nav class="forms" id="forms"></nav>
+    <button class="btn add-form" onclick="openEditor()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      הוספת טופס חדש
+    </button>
+  </aside>
+
+  <main class="card">
+    <div class="main-head">
+      <h2 id="formTitle">טוען…</h2>
+      <span class="pill" id="countPill" hidden></span>
+      <div class="spacer"></div>
+      <div class="links" id="formLinks"></div>
+      <button class="btn icon-btn" id="editBtn" onclick="openEditor(state.form)" title="הגדרות הטופס" hidden>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+      </button>
+      <button class="btn" id="refreshBtn" onclick="loadRows()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+        רענון
+      </button>
+    </div>
+    <div class="toolbar">
+      <label class="chk">
+        <input type="checkbox" id="selectAll">
+        <span class="box"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+        בחר הכל
+      </label>
+      <div class="search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="search" type="search" placeholder="חיפוש לפי שם, כתובת, מספר…" autocomplete="off">
+      </div>
+    </div>
+    <div class="rows" id="rows"></div>
+  </main>
+
+  <aside class="card side recent">
+    <div class="docs-head">
+      <div class="card-title">מסמכים אחרונים</div>
+      <button class="btn btn-ghost btn-sm" onclick="loadOutputs()" title="רענון">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+      </button>
+    </div>
+    <div class="docs" id="docs"></div>
+  </aside>
+</div>
+
+<div class="actionbar" id="actionbar">
+  <span class="count"><b id="selCount">0</b>הגשות נבחרו</span>
+  <button class="btn btn-ghost btn-sm" onclick="clearSelection()">ניקוי</button>
+  <button class="btn btn-primary" id="generateBtn" onclick="generate()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="m9 15 3 3 3-3"/></svg>
+    צור מסמכים
+  </button>
+</div>
+
+<div class="overlay" id="overlay" onclick="if (event.target === this) closeModal()">
+  <div class="modal">
+    <div class="modal-top">
+      <div class="ok"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+      <h3 id="modalTitle"></h3>
+      <p>המסמכים נשמרו בתיקיית output</p>
+    </div>
+    <div class="modal-list" id="modalList"></div>
+    <div class="modal-foot">
+      <button class="btn" onclick="openOutput()">פתח תיקייה</button>
+      <button class="btn btn-primary" onclick="closeModal()">סגור</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="editor">
+  <div class="modal wide">
+    <div class="ed-head">
+      <h3 id="edTitle">הוספת טופס חדש</h3>
+      <div class="ed-steps">
+        <button class="ed-step" data-step="0"><b>1</b>תבנית Word</button>
+        <button class="ed-step" data-step="1"><b>2</b>קישורים לגוגל</button>
+        <button class="ed-step" data-step="2"><b>3</b>התאמת שדות</button>
+      </div>
+    </div>
+
+    <div class="ed-body">
+      <!-- step 1: template -->
+      <div class="ed-page" data-page="0">
+        <div class="fg">
+          <label for="edName">שם הטופס</label>
+          <input class="inp" id="edName" placeholder="לדוגמה: טופס 12 – אישור חשמלאי">
+          <div class="hint">השם שיופיע ברשימת הטפסים.</div>
+        </div>
+        <div class="fg">
+          <label>קובץ התבנית (Word)</label>
+          <div class="drop" id="drop">
+            <div class="big"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg></div>
+            <strong id="dropTitle">גררו לכאן קובץ ‎.docx או לחצו לבחירה</strong>
+            <span id="dropSub">המסמך שימולא אוטומטית בכל הגשה</span>
+          </div>
+          <input type="file" id="fileInput" accept=".docx" hidden>
+          <div id="tplInfo"></div>
+        </div>
+        <div class="note">
+          <b>איך מכינים תבנית?</b> במסמך ה-Word, כתבו את שם השדה בין שני קווים תחתונים כפולים במקום שבו הערך צריך להופיע,
+          לדוגמה <code>__שם_העסק__</code> או <code>__תאריך__</code>. כל שדה כזה יקושר בשלב 3 לשאלה בטופס Google.
+        </div>
+      </div>
+
+      <!-- step 2: links -->
+      <div class="ed-page" data-page="1">
+        <div class="fg">
+          <label for="edFormUrl">קישור לטופס Google <span class="opt">(רשות)</span></label>
+          <input class="inp ltr" id="edFormUrl" placeholder="https://docs.google.com/forms/d/e/.../viewform">
+          <div class="hint">הקישור שאתם שולחים למילוי (בטופס: "שליחה" ← סמל הקישור). יופיע ככפתור ליד שם הטופס, עם אפשרות העתקה.</div>
+        </div>
+        <div class="fg">
+          <label for="edSheet">קישור לגיליון התגובות (Google Sheets)</label>
+          <div class="inline">
+            <input class="inp ltr" id="edSheet" placeholder="https://docs.google.com/spreadsheets/d/...">
+            <button class="btn" id="checkSheetBtn" onclick="checkSheet()">בדיקת חיבור</button>
+          </div>
+          <div class="hint">בטופס Google: לשונית "תגובות" ← "קישור ל-Sheets". את הגיליון יש לשתף כ"כל מי שקיבל את הקישור – צפייה".</div>
+          <div id="sheetStatus"></div>
+        </div>
+        <div id="sheetExtras" hidden>
+          <div class="fg">
+            <label for="edTs">עמודת תאריך השליחה</label>
+            <select class="inp" id="edTs"></select>
+            <div class="hint">בדרך כלל "חותמת זמן" – נוצרת אוטומטית על ידי Google Forms.</div>
+          </div>
+          <div class="fg">
+            <label class="chk switch-row">
+              <input type="checkbox" id="edFilterOn">
+              <span class="box"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+              <span style="color:var(--text)">המסמך נוצר רק להגשות שבהן נבחרה אפשרות מסוימת</span>
+            </label>
+            <div class="hint">למשל: כמה טפסים משתמשים באותו גיליון, וטופס זה נוצר רק כשבשאלה "איזה עוד טפסים" סומן "טופס 12".</div>
+            <div class="filter-box" id="filterBox">
+              <div><label class="hint" for="edFilterCol">שאלה בטופס</label><select class="inp" id="edFilterCol"></select></div>
+              <div><label class="hint" for="edFilterVal">האפשרות שנבחרה</label><input class="inp" id="edFilterVal" placeholder="לדוגמה: טופס 12"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- step 3: mapping -->
+      <div class="ed-page" data-page="2">
+        <div class="map-head">
+          <b id="mapCount"></b>
+          <div class="progress"><div id="mapBar" style="width:0"></div></div>
+          <button class="btn btn-sm" onclick="autoMatch(true)">✨ התאמה אוטומטית</button>
+        </div>
+        <div class="note" style="margin-bottom:12px">לכל שדה בתבנית, בחרו מאיזו שאלה בטופס Google לקחת את הערך. שדות שימולאו ידנית (מדידות בשטח וכד') השאירו על "ללא – ימולא ידנית".</div>
+        <div class="map" id="map"></div>
+      </div>
+    </div>
+
+    <div class="ed-foot">
+      <button class="btn btn-danger" id="edDelete" onclick="deleteForm()" hidden>הסרת הטופס</button>
+      <div class="spacer"></div>
+      <button class="btn btn-ghost" onclick="closeEditor()">ביטול</button>
+      <button class="btn" id="edBack" onclick="goStep(ed.step - 1)">הקודם</button>
+      <button class="btn" id="edNext" onclick="goStep(ed.step + 1)">הבא</button>
+      <button class="btn btn-primary" id="edSave" onclick="saveForm()">שמירה</button>
+    </div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+const ICONS = {
+  form: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg>',
+  doc: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>',
+  chevron: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>',
+  check: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+  inbox: '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1z"/></svg>',
+  alert: '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>',
+  open: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>',
+};
+
+const state = { forms: [], form: null, rows: [], selected: new Set(), open: new Set(), lastClicked: null, fresh: new Set() };
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+async function api(path, body) {
+  const res = await fetch(path, body === undefined ? {} : {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || `שגיאה (${res.status})`);
+  return data;
+}
+
+function toast(title, msg = "", kind = "") {
+  const el = document.createElement("div");
+  el.className = `toast ${kind}`;
+  el.innerHTML = `<div><div class="t-title">${esc(title)}</div>${msg ? `<div class="t-msg">${esc(msg)}</div>` : ""}</div>`;
+  $("toasts").appendChild(el);
+  setTimeout(() => { el.style.transition = "opacity .3s"; el.style.opacity = 0; setTimeout(() => el.remove(), 300); }, kind === "error" ? 7000 : 3500);
+}
+
+/* ---------- forms ---------- */
+async function loadForms(preferred) {
+  try {
+    state.forms = await api("/api/forms");
+  } catch (e) {
+    toast("לא ניתן לטעון את רשימת הטפסים", e.message, "error");
+    return;
+  }
+  const saved = preferred || (() => { try { return localStorage.getItem("form"); } catch { return null; } })();
+  const first = state.forms.find((f) => f.name === saved) || state.forms[0];
+  state.form = null;
+  renderForms();
+  if (first) selectForm(first.name);
+  else {
+    $("formTitle").textContent = "אין עדיין טפסים";
+    $("formLinks").innerHTML = "";
+    $("editBtn").hidden = true;
+    $("rows").innerHTML = emptyState(ICONS.inbox, "בואו נוסיף טופס ראשון", "לחצו על \"הוספת טופס חדש\" ברשימה.");
+  }
+}
+
+function renderLinks(form) {
+  const ext = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>';
+  const copy = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+  let html = "";
+  if (form.form_url) {
+    html += `<a class="btn" href="${esc(form.form_url)}" target="_blank" rel="noopener">${ext} טופס Google</a>
+             <button class="btn icon-btn" id="copyFormLink" title="העתקת הקישור לטופס">${copy}</button>`;
+  } else {
+    html += `<button class="btn btn-ghost" id="addFormLink">+ קישור לטופס</button>`;
+  }
+  if (form.sheet_url) html += `<a class="btn" href="${esc(form.sheet_url)}" target="_blank" rel="noopener">${ext} גיליון תגובות</a>`;
+  $("formLinks").innerHTML = html;
+  $("editBtn").hidden = false;
+  const copyBtn = $("copyFormLink");
+  if (copyBtn) copyBtn.onclick = async () => {
+    try { await navigator.clipboard.writeText(form.form_url); toast("הקישור הועתק", "אפשר להדביק אותו בוואטסאפ או במייל", "success"); }
+    catch { toast("לא ניתן להעתיק", form.form_url, "error"); }
+  };
+  const addBtn = $("addFormLink");
+  if (addBtn) addBtn.onclick = () => openEditor(form.name, 1);
+}
+
+function renderForms() {
+  $("forms").innerHTML = state.forms.map((f) => `
+    <button class="form-btn ${f.name === state.form ? "active" : ""}" data-name="${esc(f.name)}">
+      <span class="ic">${ICONS.form}</span>
+      <span class="nm">${esc(f.display_name)}${f.has_sheet ? "" : '<span class="sub">לא מחובר לגיליון</span>'}</span>
+    </button>`).join("");
+  $("forms").querySelectorAll(".form-btn").forEach((b) => b.onclick = () => selectForm(b.dataset.name));
+}
+
+function selectForm(name) {
+  if (state.form === name) return;
+  state.form = name;
+  try { localStorage.setItem("form", name); } catch {}
+  renderForms();
+  $("search").value = "";
+  loadRows();
+}
+
+/* ---------- rows ---------- */
+async function loadRows() {
+  const form = state.forms.find((f) => f.name === state.form);
+  if (!form) return;
+  $("formTitle").textContent = form.display_name;
+  renderLinks(form);
+  $("countPill").hidden = true;
+  state.rows = []; state.selected.clear(); state.open.clear(); state.lastClicked = null;
+  updateSelection();
+  $("rows").innerHTML = Array.from({ length: 5 }, () => '<div class="skeleton"></div>').join("");
+  $("refreshBtn").classList.add("spinning");
+  $("refreshBtn").disabled = true;
+  try {
+    const data = await api(`/api/rows?form=${encodeURIComponent(form.name)}`);
+    if (state.form !== form.name) return; // user switched forms meanwhile
+    if (data.no_sheet) {
+      $("rows").innerHTML = emptyState(ICONS.inbox, "הטופס לא מחובר לגיליון", "יש להוסיף sheet_id לטופס זה בקובץ forms.json");
+      return;
+    }
+    state.rows = data.rows;
+    $("countPill").textContent = `${state.rows.length} הגשות`;
+    $("countPill").hidden = false;
+    renderRows();
+  } catch (e) {
+    if (state.form !== form.name) return;
+    $("rows").innerHTML = emptyState(ICONS.alert, "לא הצלחנו לטעון את הגיליון", "בדקו את החיבור לאינטרנט ונסו שוב. " + e.message, true)
+      + '<div style="text-align:center;margin-top:-40px;padding-bottom:30px"><button class="btn" onclick="loadRows()">נסו שוב</button></div>';
+  } finally {
+    $("refreshBtn").classList.remove("spinning");
+    $("refreshBtn").disabled = false;
+  }
+}
+
+function emptyState(icon, title, msg, error = false) {
+  return `<div class="empty ${error ? "error" : ""}"><div class="big">${icon}</div><h3>${esc(title)}</h3><div>${esc(msg)}</div></div>`;
+}
+
+function visibleRows() {
+  const q = $("search").value.trim().toLowerCase();
+  if (!q) return state.rows;
+  return state.rows.filter((r) => (r.timestamp + " " + r.fields.map((f) => f.join(" ")).join(" ")).toLowerCase().includes(q));
+}
+
+function formatDate(ts) {
+  const [date = "", time = ""] = ts.split(" ");
+  const [d, m, y] = date.split("/");
+  const now = new Date();
+  const pad = (n) => String(n).padStart(2, "0");
+  const today = `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()}`;
+  const yd = new Date(now - 864e5);
+  const yesterday = `${pad(yd.getDate())}/${pad(yd.getMonth() + 1)}/${yd.getFullYear()}`;
+  let label = d && m ? `${+d}.${+m}` : date;
+  if (date === today) label = "היום";
+  else if (date === yesterday) label = "אתמול";
+  else if (y && +y !== now.getFullYear()) label = `${+d}.${+m}.${String(y).slice(2)}`;
+  return { label, time: time.slice(0, 5) };
+}
+
+function renderRows() {
+  const rows = visibleRows();
+  if (!state.rows.length) {
+    $("rows").innerHTML = emptyState(ICONS.inbox, "אין עדיין הגשות", "כשמישהו ימלא את הטופס, ההגשה תופיע כאן.");
+    updateSelection();
+    return;
+  }
+  if (!rows.length) {
+    $("rows").innerHTML = emptyState(ICONS.inbox, "לא נמצאו תוצאות", "נסו מילת חיפוש אחרת.");
+    updateSelection();
+    return;
+  }
+  $("rows").innerHTML = rows.map((r) => {
+    const { label, time } = formatDate(r.timestamp);
+    // Prefer a "name" field (שם העסק / שם הלקוח…) as the headline.
+    const title = r.fields.find(([k]) => k.includes("שם")) || r.fields[0];
+    const rest = r.fields.filter((f) => f !== title);
+    const sel = state.selected.has(r.id);
+    return `
+    <div class="row ${sel ? "selected" : ""} ${state.open.has(r.id) ? "open" : ""}" data-id="${r.id}">
+      <div class="row-main">
+        <label class="chk" onclick="event.stopPropagation()">
+          <input type="checkbox" ${sel ? "checked" : ""} data-id="${r.id}">
+          <span class="box">${ICONS.check}</span>
+        </label>
+        <div class="date"><div class="d">${esc(label)}</div><div class="t">${esc(time)}</div></div>
+        <div class="row-body">
+          <div class="row-title">${title ? esc(title[1]) : "(ללא תוכן)"}</div>
+          <div class="row-meta">
+            ${rest.slice(0, 3).map(([k, v]) => `<span class="tag" title="${esc(k)}: ${esc(v)}"><b>${esc(k)}:</b> ${esc(v)}</span>`).join("")}
+            ${r.also.map((a) => `<span class="tag also" title="ייווצר גם מסמך זה">+ ${esc(a)}</span>`).join("")}
+          </div>
+        </div>
+        <button class="expand" title="הצג את כל הפרטים">${ICONS.chevron}</button>
+      </div>
+      <div class="details">
+        <div class="field"><div class="k">תאריך שליחה</div><div class="v">${esc(r.timestamp)}</div></div>
+        ${r.fields.map(([k, v]) => `<div class="field"><div class="k">${esc(k)}</div><div class="v">${esc(v)}</div></div>`).join("")}
+      </div>
+    </div>`;
+  }).join("");
+
+  $("rows").querySelectorAll(".row").forEach((el) => {
+    const id = +el.dataset.id;
+    el.querySelector(".row-main").onclick = (ev) => toggleRow(id, ev.shiftKey);
+    el.querySelector("input").onclick = (ev) => toggleRow(id, ev.shiftKey, ev.target.checked);
+    el.querySelector(".expand").onclick = (ev) => {
+      ev.stopPropagation();
+      state.open.has(id) ? state.open.delete(id) : state.open.add(id);
+      el.classList.toggle("open");
+    };
+  });
+  updateSelection();
+}
+
+function toggleRow(id, shift, forceValue) {
+  const value = forceValue ?? !state.selected.has(id);
+  const ids = visibleRows().map((r) => r.id);
+  if (shift && state.lastClicked !== null && ids.includes(state.lastClicked)) {
+    const [a, b] = [ids.indexOf(state.lastClicked), ids.indexOf(id)].sort((x, y) => x - y);
+    ids.slice(a, b + 1).forEach((i) => value ? state.selected.add(i) : state.selected.delete(i));
+  } else {
+    value ? state.selected.add(id) : state.selected.delete(id);
+  }
+  state.lastClicked = id;
+  document.getSelection()?.removeAllRanges();
+  syncRowSelection();
+}
+
+function syncRowSelection() {
+  $("rows").querySelectorAll(".row").forEach((el) => {
+    const on = state.selected.has(+el.dataset.id);
+    el.classList.toggle("selected", on);
+    el.querySelector("input").checked = on;
+  });
+  updateSelection();
+}
+
+function updateSelection() {
+  const n = state.selected.size;
+  $("selCount").textContent = n;
+  $("actionbar").classList.toggle("show", n > 0);
+  const ids = visibleRows().map((r) => r.id);
+  const selectedVisible = ids.filter((i) => state.selected.has(i)).length;
+  const all = $("selectAll");
+  all.checked = ids.length > 0 && selectedVisible === ids.length;
+  all.indeterminate = selectedVisible > 0 && selectedVisible < ids.length;
+}
+
+function clearSelection() {
+  state.selected.clear();
+  syncRowSelection();
+}
+
+$("selectAll").onchange = (e) => {
+  visibleRows().forEach((r) => e.target.checked ? state.selected.add(r.id) : state.selected.delete(r.id));
+  syncRowSelection();
+};
+$("search").oninput = renderRows;
+
+/* ---------- generate ---------- */
+async function generate() {
+  if (!state.selected.size) return;
+  const btn = $("generateBtn");
+  const original = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> יוצר מסמכים…';
+  try {
+    const data = await api("/api/generate", { form: state.form, ids: [...state.selected] });
+    data.results.forEach((r) => state.fresh.add(r.file));
+    $("modalTitle").textContent = data.results.length === 1 ? "נוצר מסמך אחד" : `נוצרו ${data.results.length} מסמכים`;
+    $("modalList").innerHTML = data.results.map((r) => docItem(r.file, r.form, true)).join("");
+    bindOpenButtons($("modalList"));
+    $("overlay").classList.add("show");
+    clearSelection();
+    loadOutputs();
+  } catch (e) {
+    toast("יצירת המסמכים נכשלה", e.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = original;
+  }
+}
+
+function closeModal() { $("overlay").classList.remove("show"); }
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+
+/* ---------- recent documents ---------- */
+function docItem(file, sub, fresh) {
+  return `<div class="doc ${fresh ? "fresh" : ""}">
+    <span class="ic">${ICONS.doc}</span>
+    <div class="info"><div class="fn" title="${esc(file)}">${esc(file.replace(/\.docx$/i, ""))}</div><div class="when">${esc(sub)}</div></div>
+    <button class="btn btn-sm" data-file="${esc(file)}">${ICONS.open} פתח</button>
+  </div>`;
+}
+
+function bindOpenButtons(root) {
+  root.querySelectorAll("[data-file]").forEach((b) => b.onclick = () => openOutput(b.dataset.file));
+}
+
+async function loadOutputs() {
+  try {
+    const files = await api("/api/outputs");
+    $("docs").innerHTML = files.length
+      ? files.map((f) => docItem(f.file, f.modified, state.fresh.has(f.file))).join("")
+      : '<div class="doc-empty">עדיין לא נוצרו מסמכים.</div>';
+    bindOpenButtons($("docs"));
+  } catch (e) {
+    $("docs").innerHTML = '<div class="doc-empty">לא ניתן לטעון את רשימת המסמכים.</div>';
+  }
+}
+
+async function openOutput(file) {
+  try {
+    const res = await api("/api/open", { file: file || null });
+    if (res.download) {
+      window.location.href = res.download;
+      toast("מוריד את המסמך…", file);
+    } else if (res.folder === false) {
+      toast("המסמכים נשמרים בתיקיית output", "לחצו על מסמך ברשימה כדי להוריד אותו");
+    } else if (file) {
+      toast("פותח את המסמך…", file);
+    }
+  } catch (e) {
+    toast("לא ניתן לפתוח", e.message, "error");
+  }
+}
+
+/* ---------- form editor (add / edit) ---------- */
+const ed = { original: null, uploadId: null, templateFile: "", placeholders: [], columns: [], sample: {}, keyToColumn: {}, step: 0, sheetOk: false };
+
+async function openEditor(name, startStep = 0) {
+  Object.assign(ed, { original: name || null, uploadId: null, templateFile: "", placeholders: [], columns: [], sample: {}, keyToColumn: {}, sheetOk: false });
+  $("edTitle").textContent = name ? "הגדרות הטופס" : "הוספת טופס חדש";
+  $("edName").value = ""; $("edFormUrl").value = ""; $("edSheet").value = "";
+  $("edFilterOn").checked = false; $("edFilterVal").value = ""; $("filterBox").classList.remove("show");
+  $("sheetStatus").innerHTML = ""; $("sheetExtras").hidden = true; $("edTs").dataset.want = "";
+  $("edFilterCol").dataset.want = "";
+  $("edDelete").hidden = !name; $("edDelete").classList.remove("confirm"); $("edDelete").textContent = "הסרת הטופס";
+  if (name) {
+    try {
+      const f = await api(`/api/form?form=${encodeURIComponent(name)}`);
+      ed.templateFile = f.template_file;
+      ed.placeholders = f.placeholders;
+      ed.keyToColumn = f.key_to_column;
+      $("edName").value = f.display_name;
+      $("edFormUrl").value = f.form_url;
+      $("edSheet").value = f.sheet_url;
+      $("edTs").dataset.want = f.timestamp_column || "";
+      if (f.row_filter) {
+        $("edFilterOn").checked = true;
+        $("filterBox").classList.add("show");
+        $("edFilterCol").dataset.want = f.row_filter.column;
+        $("edFilterVal").value = f.row_filter.must_include;
+      }
+    } catch (e) {
+      toast("לא ניתן לטעון את הגדרות הטופס", e.message, "error");
+      return;
+    }
+    if ($("edSheet").value) checkSheet(true);
+  }
+  renderTemplateInfo();
+  $("editor").classList.add("show");
+  goStep(startStep, true);
+}
+
+function closeEditor() { $("editor").classList.remove("show"); }
+
+function renderTemplateInfo() {
+  const has = ed.uploadId || ed.templateFile;
+  $("drop").classList.toggle("has-file", !!has);
+  $("dropTitle").textContent = has ? (ed.uploadName || ed.templateFile) : "גררו לכאן קובץ ‎.docx או לחצו לבחירה";
+  $("dropSub").textContent = has ? "לחצו או גררו קובץ אחר כדי להחליף את התבנית" : "המסמך שימולא אוטומטית בכל הגשה";
+  if (!has) { $("tplInfo").innerHTML = ""; return; }
+  if (!ed.placeholders.length) {
+    $("tplInfo").innerHTML = '<div class="note warn" style="margin-top:10px">לא נמצאו שדות בתבנית. ודאו שהשדות כתובים בצורה <code>__שם_שדה__</code>.</div>';
+    return;
+  }
+  $("tplInfo").innerHTML = `<div class="status ok">✓ נמצאו ${ed.placeholders.length} שדות בתבנית</div>
+    <div class="chips">${ed.placeholders.map((p) => `<span class="tag">${esc(p)}</span>`).join("")}</div>`;
+}
+
+async function uploadTemplate(file) {
+  if (!file) return;
+  if (!/\.docx$/i.test(file.name)) { toast("קובץ לא נתמך", "יש לבחור קובץ Word מסוג ‎.docx", "error"); return; }
+  $("dropTitle").textContent = "מעלה ובודק את הקובץ…";
+  const data = await new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result).split(",")[1] || "");
+    r.onerror = reject;
+    r.readAsDataURL(file);
+  });
+  try {
+    const res = await api("/api/template", { filename: file.name, data });
+    ed.uploadId = res.upload_id;
+    ed.uploadName = file.name;
+    ed.placeholders = res.placeholders;
+    ed.suggestedName = res.suggested_name;
+    if (!$("edName").value.trim()) $("edName").value = res.suggested_name;
+  } catch (e) {
+    toast("בעיה בקובץ התבנית", e.message, "error");
+  }
+  renderTemplateInfo();
+}
+
+$("drop").onclick = () => $("fileInput").click();
+$("fileInput").onchange = (e) => { uploadTemplate(e.target.files[0]); e.target.value = ""; };
+["dragenter", "dragover"].forEach((t) => $("drop").addEventListener(t, (e) => { e.preventDefault(); $("drop").classList.add("over"); }));
+["dragleave", "drop"].forEach((t) => $("drop").addEventListener(t, (e) => { e.preventDefault(); $("drop").classList.remove("over"); }));
+$("drop").addEventListener("drop", (e) => uploadTemplate(e.dataTransfer.files[0]));
+$("edSheet").oninput = () => { ed.sheetOk = false; $("sheetStatus").innerHTML = ""; };
+$("edFilterOn").onchange = (e) => $("filterBox").classList.toggle("show", e.target.checked);
+$("editor").querySelectorAll(".ed-step").forEach((b) => b.onclick = () => goStep(+b.dataset.step));
+
+async function checkSheet(silent = false) {
+  const sheet = $("edSheet").value.trim();
+  if (!sheet) { $("sheetStatus").innerHTML = '<div class="status err">יש להדביק קישור לגיליון</div>'; return false; }
+  const btn = $("checkSheetBtn");
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span> בודק…';
+  try {
+    const res = await api("/api/sheet-columns", { sheet });
+    ed.columns = res.columns; ed.sample = res.sample; ed.sheetOk = true;
+    $("sheetStatus").innerHTML = `<div class="status ok">✓ מחובר! נמצאו ${res.columns.length} שאלות בגיליון${Object.keys(res.sample).length ? "" : " (עדיין אין הגשות)"}</div>`;
+    fillColumnSelect($("edTs"), $("edTs").dataset.want || $("edTs").value || "חותמת זמן", false);
+    fillColumnSelect($("edFilterCol"), $("edFilterCol").dataset.want || $("edFilterCol").value || res.columns.find((c) => c.includes("טפסים")), false);
+    $("sheetExtras").hidden = false;
+    return true;
+  } catch (e) {
+    ed.sheetOk = false;
+    $("sheetStatus").innerHTML = `<div class="status err">✕ ${esc(e.message)}</div>`;
+    if (!silent) toast("לא הצלחנו להתחבר לגיליון", e.message, "error");
+    return false;
+  } finally {
+    btn.disabled = false; btn.textContent = "בדיקת חיבור";
+  }
+}
+
+function fillColumnSelect(select, wanted, withNone) {
+  const cols = [...ed.columns];
+  if (wanted && !cols.includes(wanted) && !withNone) cols.unshift(wanted);
+  select.innerHTML = (withNone ? '<option value="">— ללא (ימולא ידנית) —</option>' : "")
+    + cols.map((c) => `<option value="${esc(c)}">${esc(c)}${ed.columns.includes(c) ? "" : " (לא נמצא בגיליון)"}</option>`).join("");
+  select.value = wanted && cols.includes(wanted) ? wanted : (withNone ? "" : cols[0] || "");
+}
+
+async function goStep(n, force = false) {
+  if (n < 0 || n > 2) return;
+  if (!force && n > ed.step) {
+    if (!$("edName").value.trim()) { toast("חסר שם לטופס", "", "error"); return goStep(0, true); }
+    if (!ed.uploadId && !ed.templateFile) { toast("יש להעלות קובץ תבנית Word", "", "error"); return goStep(0, true); }
+    if (n === 2 && !ed.sheetOk) {
+      if (ed.step !== 1) goStep(1, true);
+      if (!(await checkSheet())) return;
+    }
+  }
+  ed.step = n;
+  $("editor").querySelectorAll(".ed-page").forEach((p) => p.classList.toggle("active", +p.dataset.page === n));
+  $("editor").querySelectorAll(".ed-step").forEach((s) => {
+    s.classList.toggle("active", +s.dataset.step === n);
+    s.classList.toggle("done", +s.dataset.step < n);
+  });
+  $("edBack").hidden = n === 0;
+  $("edNext").hidden = n === 2;
+  $("edSave").hidden = n !== 2 && !ed.original;
+  if (n === 2) { if (!Object.keys(ed.keyToColumn).length) autoMatch(false); renderMap(); }
+}
+
+const norm = (s) => String(s).replace(/[\s_\-.'"״׳:()]/g, "").toLowerCase();
+
+function autoMatch(announce) {
+  let added = 0;
+  ed.placeholders.forEach((p) => {
+    if (ed.keyToColumn[p]) return;
+    const np = norm(p);
+    const exact = ed.columns.find((c) => norm(c) === np);
+    const partial = np.length >= 2 && ed.columns
+      .filter((c) => norm(c).includes(np) || (norm(c).length >= 2 && np.includes(norm(c))))
+      .sort((a, b) => Math.abs(norm(a).length - np.length) - Math.abs(norm(b).length - np.length))[0];
+    const match = exact || partial;
+    if (match) { ed.keyToColumn[p] = match; added++; }
+  });
+  if (announce) { renderMap(); toast(added ? `הותאמו ${added} שדות נוספים` : "לא נמצאו התאמות נוספות", added ? "בדקו שההתאמות נכונות" : ""); }
+}
+
+function renderMap() {
+  if (!ed.placeholders.length) {
+    $("map").innerHTML = '<div class="note warn">לא נמצאו שדות בתבנית, אין מה להתאים.</div>';
+    updateMapCount();
+    return;
+  }
+  $("map").innerHTML = ed.placeholders.map((p, i) => `
+    <div class="map-row" data-i="${i}">
+      <div class="ph">${esc(p)}</div>
+      <div class="arrow">←</div>
+      <select class="inp"></select>
+      <div class="ex"></div>
+    </div>`).join("");
+  $("map").querySelectorAll(".map-row").forEach((row) => {
+    const p = ed.placeholders[+row.dataset.i];
+    const sel = row.querySelector("select");
+    fillColumnSelect(sel, ed.keyToColumn[p] || "", true);
+    if (ed.keyToColumn[p] && !ed.columns.includes(ed.keyToColumn[p])) {
+      sel.insertAdjacentHTML("beforeend", `<option value="${esc(ed.keyToColumn[p])}">${esc(ed.keyToColumn[p])} (לא נמצא בגיליון)</option>`);
+      sel.value = ed.keyToColumn[p];
+    }
+    const update = () => {
+      if (sel.value) ed.keyToColumn[p] = sel.value; else delete ed.keyToColumn[p];
+      row.classList.toggle("linked", !!sel.value);
+      const ex = sel.value && ed.sample[sel.value];
+      row.querySelector(".ex").textContent = ex ? `לדוגמה: ${ex}` : "";
+      updateMapCount();
+    };
+    sel.onchange = update;
+    update();
+  });
+}
+
+function updateMapCount() {
+  const total = ed.placeholders.length;
+  const linked = ed.placeholders.filter((p) => ed.keyToColumn[p]).length;
+  $("mapCount").textContent = `${linked} מתוך ${total} שדות מקושרים`;
+  $("mapBar").style.width = total ? `${(linked / total) * 100}%` : "0";
+}
+
+async function saveForm() {
+  if (!$("edName").value.trim()) { toast("חסר שם לטופס", "", "error"); return goStep(0, true); }
+  if (!ed.uploadId && !ed.templateFile) { toast("יש להעלות קובץ תבנית Word", "", "error"); return goStep(0, true); }
+  if (!$("edSheet").value.trim()) { toast("חסר קישור לגיליון", "", "error"); return goStep(1, true); }
+  const filterOn = $("edFilterOn").checked;
+  if (filterOn && !$("edFilterVal").value.trim()) { toast("חסרה האפשרות לסינון", "מלאו את \"האפשרות שנבחרה\" או בטלו את הסינון", "error"); return goStep(1, true); }
+  const btn = $("edSave");
+  btn.disabled = true;
+  try {
+    const keyToColumn = {};
+    ed.placeholders.forEach((p) => { if (ed.keyToColumn[p]) keyToColumn[p] = ed.keyToColumn[p]; });
+    const res = await api("/api/form/save", {
+      original_name: ed.original,
+      upload_id: ed.uploadId,
+      name: ed.suggestedName || $("edName").value.trim(),
+      display_name: $("edName").value.trim(),
+      form_url: $("edFormUrl").value.trim(),
+      sheet: $("edSheet").value.trim(),
+      timestamp_column: $("edTs").value || $("edTs").dataset.want || "חותמת זמן",
+      row_filter: filterOn ? { column: $("edFilterCol").value || $("edFilterCol").dataset.want, must_include: $("edFilterVal").value.trim() } : null,
+      key_to_column: keyToColumn,
+    });
+    closeEditor();
+    toast(ed.original ? "הטופס עודכן" : "הטופס נוסף בהצלחה", $("edName").value.trim(), "success");
+    loadForms(res.name);
+  } catch (e) {
+    toast("השמירה נכשלה", e.message, "error");
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function deleteForm() {
+  const btn = $("edDelete");
+  if (!btn.classList.contains("confirm")) {
+    btn.classList.add("confirm");
+    btn.textContent = "בטוח? לחצו שוב להסרה";
+    return;
+  }
+  try {
+    await api("/api/form/delete", { name: ed.original });
+    closeEditor();
+    toast("הטופס הוסר מהרשימה", "קובץ התבנית והמסמכים שכבר נוצרו נשארו בתיקייה", "success");
+    loadForms();
+  } catch (e) {
+    toast("ההסרה נכשלה", e.message, "error");
+  }
+}
+
+// Keeps the local server alive while this tab is open.
+setInterval(() => fetch("/api/ping", { method: "POST" }).catch(() => {}), 60000);
+
+loadForms();
+loadOutputs();
+</script>
+</body>
+</html>

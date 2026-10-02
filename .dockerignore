@@ -1,0 +1,9 @@
+.git
+.venv
+.claude
+__pycache__
+*.pyc
+output
+templates/~$*
+Run_Form_Filler.bat
+gui.py
