@@ -24,6 +24,7 @@ from urllib.parse import parse_qs, quote, urlparse
 
 import main as pipeline
 import parser as field_parser
+import pdf_export
 
 HOST = os.environ.get("FORM_FILLER_HOST", "127.0.0.1")
 PORT = int(os.environ.get("FORM_FILLER_PORT", "8765"))
@@ -31,6 +32,12 @@ HEADLESS = os.environ.get("FORM_FILLER_HEADLESS") == "1"
 WEB_DIR = Path(__file__).resolve().parent / "web"
 OUTPUT_DIR = Path(pipeline.OUTPUT_DIR).resolve()
 TEMPLATES_DIR = Path(pipeline.TEMPLATES_DIR).resolve()
+CACHE_DIR = Path("cache").resolve()  # last downloaded copy of each sheet, for offline use
+OUTPUT_SUFFIXES = (".docx", ".pdf")
+CONTENT_TYPES = {
+    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ".pdf": "application/pdf",
+}
 STAGING_DIR = Path(tempfile.gettempdir()) / "fill_piztul_monim_uploads"
 SHEET_ID_PATTERN = re.compile(r"/spreadsheets/d/([A-Za-z0-9_-]+)")
 DEFAULT_TIMESTAMP_COLUMN = "חותמת זמן"
@@ -79,11 +86,21 @@ def api_forms() -> list:
             "name": name,
             "display_name": display_name(name),
             "has_sheet": bool(fdef.get("sheet_id")),
+            "sheet_id": fdef.get("sheet_id") or "",
             "sheet_url": sheet_url(fdef.get("sheet_id")),
             "form_url": fdef.get("form_url", ""),
+            # Produced from another form's submissions rather than filled in on its own.
+            "filtered": bool(fdef.get("row_filter")),
         }
         for name, fdef in registry.items()
     ]
+
+
+def api_info() -> dict:
+    return {
+        "pdf": pdf_export.available(),
+        "can_open_folder": not HEADLESS and hasattr(os, "startfile"),
+    }
 
 
 # ---------- managing forms (add / edit / delete) ----------
@@ -180,9 +197,7 @@ def api_save_form(body: dict) -> dict:
     if not display:
         raise ValueError("יש לתת לטופס שם.")
     sheet_id = parse_sheet_id(body.get("sheet"))
-    form_url = (body.get("form_url") or "").strip()
-    if form_url and not form_url.startswith(("http://", "https://")):
-        raise ValueError("הקישור לטופס Google צריך להתחיל ב-https://")
+    form_url = _check_form_url(body.get("form_url"))
 
     if upload_id:
         TEMPLATES_DIR.mkdir(parents=True, exist_ok=True)
@@ -222,6 +237,29 @@ def api_save_form(body: dict) -> dict:
     return {"name": form_name}
 
 
+def _check_form_url(form_url: str | None) -> str:
+    form_url = (form_url or "").strip()
+    if form_url and not form_url.startswith(("http://", "https://")):
+        raise ValueError("הקישור לטופס Google צריך להתחיל ב-https://")
+    return form_url
+
+
+def api_set_form_url(form_name: str, form_url: str | None) -> dict:
+    """Set (or clear) just the "fill in this form" link, without the full editor."""
+    global registry
+    current = pipeline.load_forms_registry()
+    if form_name not in current:
+        raise ValueError("הטופס לא נמצא (אולי נמחק בינתיים).")
+    form_url = _check_form_url(form_url)
+    if form_url:
+        current[form_name]["form_url"] = form_url
+    else:
+        current[form_name].pop("form_url", None)
+    pipeline.save_forms_registry(current)
+    registry = current
+    return {"ok": True}
+
+
 def api_delete_form(form_name: str) -> dict:
     """Removes the form from forms.json only -- its template, config and
     already-generated documents stay on disk."""
@@ -234,14 +272,49 @@ def api_delete_form(form_name: str) -> dict:
     return {"ok": True}
 
 
-def api_rows(form_name: str) -> dict:
+def _read_sheet_cache(sheet_id: str):
+    """(rows, fetched_at) as last saved by _sheet_rows, or None."""
+    try:
+        with open(CACHE_DIR / f"{sheet_id}.json", "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return data["rows"], data["fetched_at"]
+    except (OSError, ValueError, KeyError):
+        return None
+
+
+def _sheet_rows(sheet_id: str, cached_only: bool):
+    """(rows, fetched_at, stale) for a sheet, or None if `cached_only` and it
+    was never downloaded. Every successful download is saved to CACHE_DIR, and
+    that copy is what's returned when the sheet can't be reached (offline)."""
+    cached = _read_sheet_cache(sheet_id)
+    if cached_only:
+        return (*cached, True) if cached else None
+    try:
+        rows = pipeline.fetch_sheet_rows(sheet_id)
+    except OSError:  # no connection / timeout
+        if cached is None:
+            raise
+        return (*cached, True)
+    fetched_at = datetime.now().strftime("%d/%m/%Y %H:%M")
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    tmp_path = CACHE_DIR / f"{sheet_id}.json.tmp"
+    with open(tmp_path, "w", encoding="utf-8") as f:
+        json.dump({"fetched_at": fetched_at, "rows": rows}, f, ensure_ascii=False)
+    tmp_path.replace(CACHE_DIR / f"{sheet_id}.json")
+    return rows, fetched_at, False
+
+
+def api_rows(form_name: str, cached_only: bool = False) -> dict:
     form_def = registry[form_name]
     sheet_id = form_def.get("sheet_id")
     if not sheet_id:
         rows_cache[form_name] = []
         return {"rows": [], "no_sheet": True}
 
-    rows = pipeline.fetch_sheet_rows(sheet_id)
+    loaded = _sheet_rows(sheet_id, cached_only)
+    if loaded is None:
+        return {"rows": [], "no_cache": True}
+    rows, fetched_at, stale = loaded
     rows = [row for row in rows if pipeline.row_matches_filter(row, form_def.get("row_filter"))]
     rows.sort(key=lambda row: _parse_timestamp(row, form_def), reverse=True)
     rows_cache[form_name] = rows
@@ -249,6 +322,8 @@ def api_rows(form_name: str) -> dict:
     timestamp_column = form_def["timestamp_column"]
     siblings = pipeline.sibling_forms(form_name, form_def, registry)
     return {
+        "fetched_at": fetched_at,
+        "stale": stale,
         "rows": [
             {
                 "id": idx,
@@ -265,7 +340,7 @@ def api_rows(form_name: str) -> dict:
     }
 
 
-def api_generate(form_name: str, ids: list) -> dict:
+def api_generate(form_name: str, ids: list, timestamps: list | None = None) -> dict:
     form_def = registry[form_name]
     cached = rows_cache.get(form_name)
     if cached is None:
@@ -273,6 +348,10 @@ def api_generate(form_name: str, ids: list) -> dict:
     rows = [cached[i] for i in ids if 0 <= i < len(cached)]
     if not rows:
         raise ValueError("לא נבחרו הגשות.")
+    # ids are positions in the list as last sent to the browser; if it was
+    # reloaded since, make sure they still point at the submissions the user saw.
+    if timestamps is not None and [row.get(form_def["timestamp_column"], "") for row in rows] != timestamps:
+        raise ValueError("רשימת ההגשות התעדכנה. בחרו שוב את ההגשות ונסו שוב.")
 
     with generate_lock:
         try:
@@ -284,19 +363,59 @@ def api_generate(form_name: str, ids: list) -> dict:
     results = []
     for name, form_results in all_results.items():
         for _row, output_path in form_results:
-            results.append({"form": display_name(name), "file": Path(output_path).name})
-    return {"results": results}
+            results.append({"form": display_name(name), "file": Path(output_path).name, "pdf": None})
+
+    response = {"results": results}
+    if pdf_export.available():
+        try:
+            with generate_lock:
+                pdf_export.convert([OUTPUT_DIR / result["file"] for result in results])
+            for result in results:
+                result["pdf"] = Path(result["file"]).with_suffix(".pdf").name
+        except RuntimeError as exc:
+            traceback.print_exc()
+            response["pdf_error"] = str(exc)
+    return response
 
 
 def api_outputs() -> list:
+    """Generated documents, newest first. A document's .docx and .pdf are one entry."""
     if not OUTPUT_DIR.exists():
         return []
-    files = [p for p in OUTPUT_DIR.glob("*.docx") if not p.name.startswith("~$")]
-    files.sort(key=lambda p: p.stat().st_mtime, reverse=True)
+    docs = {}
+    for p in OUTPUT_DIR.iterdir():
+        if p.suffix.lower() not in OUTPUT_SUFFIXES or p.name.startswith("~$") or not p.is_file():
+            continue
+        doc = docs.setdefault(p.stem, {"name": p.stem, "mtime": 0, "docx": None, "pdf": None})
+        doc[p.suffix.lower()[1:]] = p.name
+        doc["mtime"] = max(doc["mtime"], p.stat().st_mtime)
+    newest_first = sorted(docs.values(), key=lambda doc: doc["mtime"], reverse=True)
     return [
-        {"file": p.name, "modified": datetime.fromtimestamp(p.stat().st_mtime).strftime("%d/%m/%Y %H:%M")}
-        for p in files[:40]
+        {
+            "name": doc["name"],
+            "docx": doc["docx"],
+            "pdf": doc["pdf"],
+            "modified": datetime.fromtimestamp(doc["mtime"]).strftime("%d/%m/%Y %H:%M"),
+        }
+        for doc in newest_first[:300]
     ]
+
+
+def api_delete_output(name: str | None) -> dict:
+    """Delete a generated document (its .docx and its .pdf)."""
+    deleted = 0
+    for suffix in OUTPUT_SUFFIXES:
+        target = (OUTPUT_DIR / f"{name}{suffix}").resolve()
+        if target.parent != OUTPUT_DIR or not target.is_file():
+            continue
+        try:
+            target.unlink()
+        except PermissionError:
+            raise ValueError(f"הקובץ \"{target.name}\" פתוח כרגע. סגרו אותו ונסו שוב.")
+        deleted += 1
+    if not deleted:
+        raise ValueError("הקובץ לא נמצא בתיקיית הפלט.")
+    return {"ok": True}
 
 
 def _output_file(file_name: str) -> Path:
@@ -356,7 +475,9 @@ class Handler(BaseHTTPRequestHandler):
             if form_name not in registry:
                 self._json({"error": "טופס לא מוכר"}, status=404)
             else:
-                self._run(lambda: api_rows(form_name))
+                self._run(lambda: api_rows(form_name, cached_only=query.get("cached", [""])[0] == "1"))
+        elif url.path == "/api/info":
+            self._run(api_info)
         elif url.path == "/api/outputs":
             self._run(api_outputs)
         elif url.path == "/api/download":
@@ -367,7 +488,7 @@ class Handler(BaseHTTPRequestHandler):
                 return
             body = target.read_bytes()
             self.send_response(200)
-            self.send_header("Content-Type", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+            self.send_header("Content-Type", CONTENT_TYPES.get(target.suffix.lower(), "application/octet-stream"))
             self.send_header("Content-Length", str(len(body)))
             self.send_header("Content-Disposition", "attachment; filename*=UTF-8''" + quote(target.name))
             self.end_headers()
@@ -397,7 +518,7 @@ class Handler(BaseHTTPRequestHandler):
             if form_name not in registry:
                 self._json({"error": "טופס לא מוכר"}, status=404)
             else:
-                self._run(lambda: api_generate(form_name, [int(i) for i in body.get("ids", [])]))
+                self._run(lambda: api_generate(form_name, [int(i) for i in body.get("ids", [])], body.get("timestamps")))
         elif path == "/api/template":
             self._run(lambda: api_upload_template(body))
         elif path == "/api/sheet-columns":
@@ -406,6 +527,10 @@ class Handler(BaseHTTPRequestHandler):
             self._run(lambda: api_save_form(body))
         elif path == "/api/form/delete":
             self._run(lambda: api_delete_form(body.get("name")))
+        elif path == "/api/form/link":
+            self._run(lambda: api_set_form_url(body.get("name"), body.get("form_url")))
+        elif path == "/api/output/delete":
+            self._run(lambda: api_delete_output(body.get("name")))
         elif path == "/api/open":
             self._run(lambda: open_output(body.get("file")))
         else:

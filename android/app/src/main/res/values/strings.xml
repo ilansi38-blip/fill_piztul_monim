@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">מילוי טפסים</string>
+    <string name="loading">טוען…</string>
+    <string name="start_failed">האפליקציה לא הצליחה לעלות</string>
+    <string name="open">פתיחה</string>
+    <string name="share">שיתוף</string>
+    <string name="cancel">ביטול</string>
+    <string name="no_app_for_docx">לא נמצאה אפליקציה שפותחת קובצי Word</string>
+    <string name="file_missing">הקובץ לא נמצא</string>
+    <string name="pick_template">בחירת תבנית Word</string>
+</resources>

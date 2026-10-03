@@ -12,6 +12,7 @@ replaced with the matching answers, and the result is saved to `output/`.
 | `main.py` | Pipeline + CLI: fetch sheet rows, map columns, fill templates |
 | `parser.py` | Finds `__key__` placeholders and fills `.docx` files |
 | `web_gui.py`, `web/` | Browser UI (stdlib HTTP server) |
+| `pdf_export.py` | Optional PDF copies via Microsoft Word (Windows only) |
 | `gui.py` | Older Tkinter desktop UI |
 | `forms.json` | Registry of forms → template, sheet ID, column mapping |
 | `templates/` | Source `.docx` templates |
@@ -19,6 +20,12 @@ replaced with the matching answers, and the result is saved to `output/`.
 
 Google Sheets must be shared as "anyone with the link can view" so their CSV
 export can be downloaded.
+
+The web UI has three tabs: **מילוי טופס** (links to fill in each Google Form),
+**הגשות** (pick submissions and create documents) and **מסמכים** (open, share or
+delete what was created). The last downloaded copy of every sheet is kept in
+`cache/`, so submissions still show without a connection. On a Windows machine
+with Microsoft Word, each document is also saved as a PDF (`pdf_export.py`).
 
 ## Run locally (Windows)
 
@@ -48,6 +55,27 @@ docker build -t form-filler .
 docker run --rm -p 8765:8765 -v "$PWD/output:/app/output" form-filler
 docker run --rm -v "$PWD/output:/app/output" form-filler python main.py   # CLI
 ```
+
+## Android app
+
+`android/` is an Android Studio / Gradle project that wraps the same web UI in
+an app. The Python code runs on the phone itself (via
+[Chaquopy](https://chaquo.com/chaquopy/)), so no server or PC is needed — only
+an internet connection to read the Google Sheets. The build copies `main.py`,
+`parser.py`, `web_gui.py`, `web/`, `templates/`, `configs/` and `forms.json`
+from the repository root into the APK.
+
+- **GitHub Actions:** every push to `main` builds a debug APK
+  (`.github/workflows/android.yml`); download it from the run's *Artifacts*
+  (`form-filler-apk`) and install it on the phone.
+- **Locally:** open `android/` in Android Studio and press Run, or run
+  `gradlew assembleDebug` in `android/` (APK lands in
+  `android/app/build/outputs/apk/debug/`). Chaquopy needs Python 3.13 on the
+  build machine; if it isn't the default `python`, add
+  `buildPython=C:/path/to/python313/python.exe` to `android/local.properties`.
+
+Generated documents are kept in the app's private storage; tapping one offers
+to open it (Word, Google Docs…) or share it.
 
 ### Environment variables
 

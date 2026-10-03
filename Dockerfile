@@ -14,11 +14,11 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY main.py parser.py web_gui.py forms.json ./
+COPY main.py parser.py web_gui.py pdf_export.py forms.json ./
 COPY web/ web/
 COPY templates/ templates/
 COPY configs/ configs/
-RUN mkdir -p output
+RUN mkdir -p output cache
 
 EXPOSE 8765
 

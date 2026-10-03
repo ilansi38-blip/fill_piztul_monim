@@ -10,3 +10,6 @@ output/
 ~$*
 
 .claude/settings.local.json
+
+# Last downloaded copy of each sheet (submitted personal data)
+cache/
