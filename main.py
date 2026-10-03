@@ -117,10 +117,12 @@ def build_output_path(form_name: str, row: dict, timestamp_column: str, output_d
 
 def fill_rows(form_name: str, form_def: dict, rows: list) -> list:
     """Fill one output docx per row in `rows`, applying them in chronological
-    order so each row's fields build cumulatively on the previous one's (the
-    same "persisted config" model used everywhere else in this pipeline).
-    Saves the form's config to reflect the state after the last row. Returns
-    a list of (row, output_path) in the order the rows were applied.
+    order. Every sheet-mapped key is blanked before each row is applied, so a
+    question the submitter left empty stays empty instead of inheriting the
+    answer from an earlier submission; only keys the sheet doesn't feed (set
+    by hand in the config file) carry over. Saves the form's config to
+    reflect the state after the last row. Returns a list of (row,
+    output_path) in the order the rows were applied.
     """
     template_path = str(Path(TEMPLATES_DIR) / f"{form_name}.docx")
     config_path = field_parser.config_path_for(template_path, CONFIGS_DIR)
@@ -132,6 +134,7 @@ def fill_rows(form_name: str, form_def: dict, rows: list) -> list:
     ordered_rows = sorted(rows, key=lambda row: datetime.strptime(row[timestamp_column], timestamp_format))
     for row in ordered_rows:
         mapped_values = map_row_to_config(row, form_def["column_to_key"], form_def.get("value_map"))
+        config.update(dict.fromkeys(form_def["column_to_key"].values(), ""))
         config.update(mapped_values)
         output_path = build_output_path(form_name, row, timestamp_column)
         field_parser.fill_document(template_path, dict(config), output_path)
